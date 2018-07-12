@@ -1,0 +1,19 @@
+#!/bin/bash
+set -e
+set -o pipefail
+set -u
+
+cd "$(dirname "$0")"
+
+ACCOUNT_ID=$1
+BUCKET_NAME=$2
+CHANGE_SET_NAME="changeset-$(date +%Y%m%d%H%M%S)-$(git describe --always --dirty)"
+
+aws cloudformation create-change-set \
+  --stack-name="$BUCKET_NAME" \
+  --change-set-name="$CHANGE_SET_NAME" \
+  --template-body=file://cloudformation.yaml \
+  --parameters \
+    "ParameterKey=BucketName,ParameterValue=$BUCKET_NAME" \
+    "ParameterKey=AccountId,ParameterValue=$ACCOUNT_ID" \
+  --capabilities=CAPABILITY_NAMED_IAM

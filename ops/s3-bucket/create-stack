@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+set -o pipefail
+set -u
+
+cd "$(dirname "$0")"
+
+ACCOUNT_ID=$1
+BUCKET_NAME=$2
+
+aws cloudformation create-stack \
+  --stack-name="$BUCKET_NAME" \
+  --template-body="file://cloudformation.yaml" \
+  --parameters \
+    "ParameterKey=BucketName,ParameterValue=$BUCKET_NAME" \
+    "ParameterKey=AccountId,ParameterValue=$ACCOUNT_ID" \
+  --capabilities=CAPABILITY_NAMED_IAM
